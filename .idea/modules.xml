@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/NyanScripts.iml" filepath="$PROJECT_DIR$/NyanScripts.iml" />
       <module fileurl="file://$PROJECT_DIR$/OrgeCAnnoner/OrgeCAnnoner.iml" filepath="$PROJECT_DIR$/OrgeCAnnoner/OrgeCAnnoner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TeleAlcher/TeleAlcher.iml" filepath="$PROJECT_DIR$/TeleAlcher/TeleAlcher.iml" />
     </modules>
   </component>
 </project>
