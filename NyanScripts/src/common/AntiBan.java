@@ -1,3 +1,5 @@
+import org.dreambot.api.methods.Calculations;
+import org.dreambot.api.methods.input.Camera;
 import org.dreambot.api.utilities.Logger;
 import org.dreambot.api.utilities.Sleep;
 import org.dreambot.api.utilities.Timer;
@@ -9,9 +11,12 @@ public class AntiBan {
     private Timer timer;
     private List<AntiBanAction> antiBanActions;
 
+
     public enum AntiBanType {
         CHECK_MAGIC_XP,
-        IDLE_FOR_A_BIT
+        IDLE_FOR_A_BIT,
+
+        ROTATE_CAMERA,
     }
 
     public static class AntiBanAction {
@@ -58,10 +63,18 @@ public class AntiBan {
                 case IDLE_FOR_A_BIT:
                     idleForABit(randomAction.getRandomDuration());
                     break;
+                case ROTATE_CAMERA:
+                    rotateCamera(randomAction.getRandomDuration());
+                    break;
             }
             timer.reset();
             timer.setRunTime(getRandomActionFrequency());
         }
+    }
+
+    private void rotateCamera(int duration) {
+        Camera.mouseRotateTo(Calculations.random(0, 360), Calculations.random(0, 360));
+        Sleep.sleep(duration);
     }
 
     private int getRandomActionFrequency() {
