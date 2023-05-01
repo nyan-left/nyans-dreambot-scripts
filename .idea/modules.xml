@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/NyanScripts.iml" filepath="$PROJECT_DIR$/NyanScripts.iml" />
-      <module fileurl="file://$PROJECT_DIR$/OrgeCannoner/OrgeCannoner.iml" filepath="$PROJECT_DIR$/OrgeCannoner/OrgeCannoner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/OgreCannoner/OgreCannoner.iml" filepath="$PROJECT_DIR$/OgreCannoner/OgreCannoner.iml" />
       <module fileurl="file://$PROJECT_DIR$/TeleAlcher/TeleAlcher.iml" filepath="$PROJECT_DIR$/TeleAlcher/TeleAlcher.iml" />
     </modules>
   </component>

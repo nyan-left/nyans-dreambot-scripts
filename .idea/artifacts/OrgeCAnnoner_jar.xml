@@ -2,7 +2,7 @@
   <artifact type="jar" name="OrgeCAnnoner:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/OrgeCAnnoner_jar</output-path>
     <root id="archive" name="OrgeCAnnoner.jar">
-      <element id="module-output" name="OrgeCannoner" />
+      <element id="module-output" name="OgreCannoner" />
       <element id="extracted-dir" path="$USER_HOME$/DreamBot/BotData/gamepack.jar" path-in-jar="/" />
     </root>
   </artifact>
