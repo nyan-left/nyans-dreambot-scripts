@@ -49,6 +49,7 @@ public class CannonManager implements GameMessageListener {
         PLACE_CANNON,
         FIRE_LOAD_CANNON,
         HOP_WORLD,
+        BROKEN,
         EXIT,
     }
 
@@ -63,6 +64,8 @@ public class CannonManager implements GameMessageListener {
         }
 
         if (!hasCannonballs()) return CannonState.EXIT;
+
+        if (this.isBroken) return CannonState.BROKEN;
 
         // if cannon has been placed, load
         if (placedCannon != null) return CannonState.FIRE_LOAD_CANNON;
@@ -84,6 +87,9 @@ public class CannonManager implements GameMessageListener {
 
             case FIRE_LOAD_CANNON:
                 loadCannon();
+                break;
+            case BROKEN:
+                repairCannon();
                 break;
 
             case EXIT:
@@ -150,11 +156,15 @@ public class CannonManager implements GameMessageListener {
     }
 
     public void exit() {
+        this.pickUpCannon();
+        main.exit("pick up cannon and exit called");
+    }
+
+    public void pickUpCannon() {
         if (placedCannon != null) {
             placedCannon.interact("Pick-up");
             Sleep.sleepUntil(() -> Inventory.contains(CANNON_ID), 5000);
         }
-        main.exit("pick up cannon and exit called");
     }
 
     public void onGameMessage(String message) {
@@ -168,11 +178,36 @@ public class CannonManager implements GameMessageListener {
             case "You pick up the cannon. It's really heavy.":
                 main.exit("Picked up cannon");
                 break;
+            case "Your cannon has broken!":
+                Logger.log("Cannon has broken");
+                this.isBroken = true;
+                break;
+            case "You repair your cannon, restoring it to working order.":
+                Logger.log("Cannon has been repaired");
+                this.isBroken = false;
+                break;
             case "You add the furnace.":
             case "You load the cannon with 30 cannonballs.":
             case "Your cannon is already firing.":
             default:
                 break;
+        }
+    }
+
+    private boolean isBroken = false;
+
+    public void repairCannon() {
+        GameObject cannon = GameObjects.closest("Broken multicannon");
+        if (cannon != null) {
+            cannon.interact("Repair");
+            Sleep.sleepUntil(() -> GameObjects.closest("Dwarf multicannon") != null, 10000);
+            GameObject placedCannonObject = GameObjects.closest("Dwarf multicannon");
+            if (placedCannonObject != null) {
+                placedCannon = placedCannonObject;
+                Logger.log("Placed cannon");
+            } else {
+                Logger.log("Failed to place the cannon");
+            }
         }
     }
 

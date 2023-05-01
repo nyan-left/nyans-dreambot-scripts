@@ -53,7 +53,7 @@ public class Cannon extends AbstractScript implements ChatListener {
     @Override
     public boolean onSolverStart(RandomSolver solver) {
         if (solver instanceof BreakSolver) {
-            cannonManager.exit();
+            cannonManager.pickUpCannon();
             Sleep.sleep(10000);
         }
         super.onSolverStart(solver);
