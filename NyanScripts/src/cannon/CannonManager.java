@@ -74,7 +74,7 @@ public class CannonManager implements GameMessageListener {
 
             case EXIT:
             default:
-                this.pickUpCannonAndExit();
+                this.exit();
                 break;
         }
     }
@@ -106,7 +106,7 @@ public class CannonManager implements GameMessageListener {
         }
     }
 
-    public void pickUpCannonAndExit() {
+    public void exit() {
         if (placedCannon != null) {
             placedCannon.interact("Pick-up");
             Sleep.sleepUntil(() -> Inventory.contains(CANNON_ID), 5000);
@@ -119,7 +119,7 @@ public class CannonManager implements GameMessageListener {
 
             case "There isn't enough space to set up here.":
             case "You pick up the cannon. It's really heavy.":
-                main.exit(message);
+                this.exit();
                 break;
             case "You add the furnace.":
             case "You load the cannon with 30 cannonballs.":
