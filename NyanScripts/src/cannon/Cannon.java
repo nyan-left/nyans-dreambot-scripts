@@ -2,7 +2,9 @@ import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.script.AbstractScript;
 import org.dreambot.api.script.Category;
 import org.dreambot.api.script.ScriptManifest;
+import org.dreambot.api.script.listener.ChatListener;
 import org.dreambot.api.utilities.Logger;
+import org.dreambot.api.wrappers.widgets.message.Message;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,18 +14,24 @@ import java.util.List;
 
 @ScriptManifest(name = "Nyan Cannoner", description = "Cannons ogres!", author = "Nyan Left",
         version = 0.0, category = Category.COMBAT, image = "")
-public class Cannon extends AbstractScript {
+public class Cannon extends AbstractScript implements ChatListener {
 
     private AntiBan antiBan;
     private CannonPaint paint;
 
+
     CannonManager cannonManager;
 
+    @Override
+    public void onGameMessage(Message message) {
+        cannonManager.onGameMessage(message.getMessage());
+    }
 
     @Override
     public void onStart() {
         Logger.log("Starting script");
         this.setupAntiBan();
+        this.cannonManager = new CannonManager(this);
 
         SwingUtilities.invokeLater(() -> {
             this.isRunning = true;
@@ -46,9 +54,7 @@ public class Cannon extends AbstractScript {
         antiBan.performAntiBan();
 
         if (!antiBan.isAntibanRunning()) {
-            // Cannon next step
-
-            CannonManager.manageCannon(this);
+            cannonManager.manageCannon();
         }
 
 
