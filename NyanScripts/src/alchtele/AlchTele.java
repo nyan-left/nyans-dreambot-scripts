@@ -1,4 +1,3 @@
-import common.AntiBan;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.script.AbstractScript;
 import org.dreambot.api.script.Category;

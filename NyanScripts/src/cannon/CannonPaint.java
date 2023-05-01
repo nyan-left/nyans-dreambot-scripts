@@ -1,4 +1,3 @@
-import common.AntiBan;
 import org.dreambot.api.methods.skills.Skill;
 import org.dreambot.api.methods.skills.Skills;
 

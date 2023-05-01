@@ -1,5 +1,3 @@
-package common;
-
 import org.dreambot.api.utilities.Logger;
 import org.dreambot.api.utilities.Sleep;
 import org.dreambot.api.utilities.Timer;
@@ -72,7 +70,7 @@ public class AntiBan {
 
     private void checkMagicXP(int duration) {
         Logger.log("Performing antiban: Checking Magic XP");
-    
+
     }
 
     private void idleForABit(int duration) {
