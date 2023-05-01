@@ -32,8 +32,8 @@ public class CannonManager implements GameMessageListener {
     private GameObject placedCannon;
 
     private long nextLoadAttemptTime;
-    private Cannon main;
-    private InventoryManager inventoryManager;
+    private final Cannon main;
+    private final InventoryManager inventoryManager;
 
     public CannonManager(Cannon main) {
         this.main = main;
@@ -43,23 +43,19 @@ public class CannonManager implements GameMessageListener {
     private enum CannonState {
         PLACE_CANNON,
         FIRE_LOAD_CANNON,
-        PICK_UP_CANNON,
-        EXIT
+        EXIT,
     }
 
     private CannonState getCannonState() {
 
 
         if ((placedCannon == null) && !hasCannon() && !hasCannonballs()) return CannonState.EXIT;
-
         if (placedCannon == null) return CannonState.PLACE_CANNON;
+        if (hasCannonballs()) return CannonState.FIRE_LOAD_CANNON;
 
-        if (hasCannonballs()) {
-            return CannonState.FIRE_LOAD_CANNON;
-        } else {
-            Logger.log("Picking up cannon as we don't have any cannonballs");
-        }
-        return CannonState.PICK_UP_CANNON;
+
+        Logger.log("Picking up cannon as we don't have any cannonballs");
+        return CannonState.EXIT;
     }
 
 
@@ -75,8 +71,10 @@ public class CannonManager implements GameMessageListener {
             case FIRE_LOAD_CANNON:
                 loadCannon();
                 break;
+
+            case EXIT:
             default:
-                main.exit("Cannon manager exited");
+                this.pickUpCannonAndExit();
                 break;
         }
     }
@@ -112,8 +110,8 @@ public class CannonManager implements GameMessageListener {
         if (placedCannon != null) {
             placedCannon.interact("Pick-up");
             Sleep.sleepUntil(() -> Inventory.contains(CANNON_ID), 5000);
-            main.exit("Picked up cannon");
         }
+        main.exit("pick up cannon and exit called");
     }
 
     public void onGameMessage(String message) {
