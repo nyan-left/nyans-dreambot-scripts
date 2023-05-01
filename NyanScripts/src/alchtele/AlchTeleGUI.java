@@ -4,8 +4,8 @@ import org.dreambot.api.utilities.Logger;
 import javax.swing.*;
 import java.awt.*;
 
-public class GUI {
-    public static void createGUI(Main main) {
+public class AlchTeleGUI {
+    public static void createGUI(AlchTele main) {
         JFrame frame = new JFrame("Nyan Alch Teler");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLocationRelativeTo(Client.getCanvas());

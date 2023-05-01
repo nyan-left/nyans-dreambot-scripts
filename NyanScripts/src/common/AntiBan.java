@@ -1,4 +1,5 @@
-import org.dreambot.api.script.AbstractScript;
+package common;
+
 import org.dreambot.api.utilities.Logger;
 import org.dreambot.api.utilities.Sleep;
 import org.dreambot.api.utilities.Timer;
@@ -7,7 +8,6 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class AntiBan {
-    private AbstractScript script;
     private Timer timer;
     private List<AntiBanAction> antiBanActions;
 
@@ -44,8 +44,7 @@ public class AntiBan {
         }
     }
 
-    public AntiBan(Main script, List<AntiBanAction> antiBanActions) {
-        this.script = script;
+    public AntiBan(List<AntiBanAction> antiBanActions) {
         this.timer = new Timer();
         this.antiBanActions = antiBanActions;
         timer.setRunTime(getRandomActionFrequency());
@@ -72,8 +71,8 @@ public class AntiBan {
     }
 
     private void checkMagicXP(int duration) {
-        script.log("Performing antiban: Checking Magic XP");
-        // Implement the necessary steps for checking Magic XP
+        Logger.log("Performing antiban: Checking Magic XP");
+    
     }
 
     private void idleForABit(int duration) {

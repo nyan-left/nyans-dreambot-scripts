@@ -1,3 +1,4 @@
+import common.AntiBan;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.script.AbstractScript;
 import org.dreambot.api.script.Category;
@@ -12,22 +13,22 @@ import java.util.List;
 
 @ScriptManifest(name = "Nyan Alch Teler", description = "A simple script that alches and teles", author = "Nyan Left",
         version = 0.0, category = Category.MAGIC, image = "")
-public class Main extends AbstractScript {
+public class AlchTele extends AbstractScript {
     private int itemToAlch = 1406;
 
     private AntiBan antiBan;
 
-    private Paint paint;
+    private AlchTelePaint paint;
 
 
     @Override
     public void onStart() {
         SwingUtilities.invokeLater(() -> {
-            GUI.createGUI(this);
+            AlchTeleGUI.createGUI(this);
         });
 
         this.setupAntiBan();
-        paint = new Paint(this, antiBan);
+        paint = new AlchTelePaint(this, antiBan);
     }
 
 
@@ -36,7 +37,7 @@ public class Main extends AbstractScript {
 
         antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.CHECK_MAGIC_XP, 1 * 60 * 1000, 10 * 60 * 1000, 1 * 60 * 1000, 2 * 60 * 1000));
         antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.IDLE_FOR_A_BIT, 1 * 60 * 1000, 10 * 60 * 1000, 1 * 60 * 1000, 2 * 60 * 1000));
-        AntiBan antiBan = new AntiBan(this, antiBanActions);
+        AntiBan antiBan = new AntiBan(antiBanActions);
         this.antiBan = antiBan;
     }
 

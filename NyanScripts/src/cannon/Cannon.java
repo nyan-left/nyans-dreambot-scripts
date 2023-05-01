@@ -1,3 +1,4 @@
+import common.AntiBan;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.script.AbstractScript;
 import org.dreambot.api.script.Category;
@@ -6,44 +7,51 @@ import org.dreambot.api.utilities.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
 @ScriptManifest(name = "Nyan Cannoner", description = "Cannons ogres!", author = "Nyan Left",
         version = 0.0, category = Category.COMBAT, image = "")
-public class Main extends AbstractScript {
+public class Cannon extends AbstractScript {
 
     private AntiBan antiBan;
-    private Paint paint;
+    private CannonPaint paint;
+
+    CannonManager cannonManager;
+
 
     @Override
     public void onStart() {
         Logger.log("Starting script");
-        antiBan = new AntiBan(this);
-        paint = new Paint(this, antiBan);
-        
+        this.setupAntiBan();
+
         SwingUtilities.invokeLater(() -> {
-//            GUI.createGUI(this);
+            this.isRunning = true;
         });
-//        antiBan = new AntiBan(this);
-//        paint = new Paint(this, antiBan);
+    }
+
+    private void setupAntiBan() {
+        List<AntiBan.AntiBanAction> antiBanActions = new ArrayList<>();
+
+        antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.CHECK_MAGIC_XP, 1 * 60 * 1000, 10 * 60 * 1000, 1 * 60 * 1000, 2 * 60 * 1000));
+        antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.IDLE_FOR_A_BIT, 1 * 60 * 1000, 10 * 60 * 1000, 1 * 60 * 1000, 2 * 60 * 1000));
+        AntiBan antiBan = new AntiBan(antiBanActions);
+        this.antiBan = antiBan;
     }
 
     @Override
     public int onLoop() {
         if (!isRunning) return Calculations.random(1000, 2000);
 
-//        if (!Alcher.hasRequirements()) {
-//            exit("You don't have the requirements to run this script, make sure you can cast high alch and camelot teleport");
-//        }
-//
         antiBan.performAntiBan();
-//
+
         if (!antiBan.isAntibanRunning()) {
-//            Alcher.performAlchTeleportCycle(this);
+            // Cannon next step
+
+            CannonManager.manageCannon(this);
         }
-//
+
 
         return Calculations.random(50, 550);
     }
@@ -64,6 +72,6 @@ public class Main extends AbstractScript {
 
     @Override
     public void onPaint(Graphics graphics) {
-        paint.draw(graphics);
+        paint.draw(graphics, antiBan);
     }
 }

@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/NyanScripts.iml" filepath="$PROJECT_DIR$/NyanScripts.iml" />
-      <module fileurl="file://$PROJECT_DIR$/OgreCannoner/OgreCannoner.iml" filepath="$PROJECT_DIR$/OgreCannoner/OgreCannoner.iml" />
-      <module fileurl="file://$PROJECT_DIR$/TeleAlcher/TeleAlcher.iml" filepath="$PROJECT_DIR$/TeleAlcher/TeleAlcher.iml" />
+      <module fileurl="file://$PROJECT_DIR$/NyanScripts/NyanScripts.iml" filepath="$PROJECT_DIR$/NyanScripts/NyanScripts.iml" />
     </modules>
   </component>
 </project>

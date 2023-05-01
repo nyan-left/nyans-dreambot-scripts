@@ -15,7 +15,7 @@ public class Alcher {
         return Magic.canCast(Normal.HIGH_LEVEL_ALCHEMY) && Magic.canCast(Normal.CAMELOT_TELEPORT);
     }
 
-    public static void performAlchTeleportCycle(Main main) {
+    public static void performAlchTeleportCycle(AlchTele main) {
         if (!Magic.isSpellSelected()) {
             castHighAlch();
         } else {
@@ -34,7 +34,7 @@ public class Alcher {
         Sleep.sleepUntil(() -> Tabs.isOpen(Tab.INVENTORY), 2000);
     }
 
-    private static void alchItem(Main main) {
+    private static void alchItem(AlchTele main) {
         Inventory.get(main.getItemToAlch()).interact();
         Sleep.sleepUntil(() -> !Players.getLocal().isAnimating(), 1000);
     }
