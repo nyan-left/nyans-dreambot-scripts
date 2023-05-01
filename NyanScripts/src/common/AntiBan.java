@@ -68,7 +68,7 @@ public class AntiBan {
                     break;
             }
 
-            // Synchronize the timer reset and runtime set operations
+            
             synchronized (timer) {
                 timer.reset();
                 timer.setRunTime(getRandomActionFrequency());

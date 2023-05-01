@@ -43,6 +43,7 @@ public class CannonManager implements GameMessageListener {
     public CannonManager(Cannon main) {
         this.main = main;
         this.inventoryManager = new SimpleInventoryManager();
+        this.placedCannon = GameObjects.closest("Dwarf multicannon");
     }
 
     private enum CannonState {
@@ -114,7 +115,7 @@ public class CannonManager implements GameMessageListener {
 
     private int getRandomLoadInterval() {
         Random random = new Random();
-        return random.nextInt((15 - 10) * 1000) + 10 * 1000; // Convert to milliseconds
+        return random.nextInt((20 - 7) * 1000) + 7 * 1000; // 7-20 seconds
     }
 
     private int targetX = 2528;
