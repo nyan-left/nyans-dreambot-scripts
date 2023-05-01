@@ -95,6 +95,6 @@ public class Cannon extends AbstractScript implements ChatListener {
 
     @Override
     public void onPaint(Graphics graphics) {
-        paint.draw(graphics, antiBan);
+        paint.draw(graphics, antiBan, cannonManager);
     }
 }

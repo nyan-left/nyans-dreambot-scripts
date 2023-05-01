@@ -77,6 +77,10 @@ public class CannonManager implements GameMessageListener {
         return CannonState.EXIT;
     }
 
+    public String getCurrentStateName() {
+        return getCannonState().name().toString();
+    }
+
     public void manageCannon() {
         CannonState state = getCannonState();
         Logger.log(state.toString());
