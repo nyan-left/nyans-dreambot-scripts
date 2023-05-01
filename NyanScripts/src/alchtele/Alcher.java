@@ -29,6 +29,7 @@ public class Alcher {
         }
     }
 
+ 
     private static void castHighAlch() {
         Magic.castSpell(Normal.HIGH_LEVEL_ALCHEMY);
         Sleep.sleepUntil(() -> Tabs.isOpen(Tab.INVENTORY), 2000);

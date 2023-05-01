@@ -29,6 +29,8 @@ public class CannonManager implements GameMessageListener {
     private static final int CANNON_ID = 6;
     private static final int CANNONBALL_ID = 2;
 
+    private GameObject placedCannon;
+
     private long nextLoadAttemptTime;
     private boolean isCannonLoaded;
     private Cannon main;
@@ -36,7 +38,7 @@ public class CannonManager implements GameMessageListener {
 
     public CannonManager(Cannon main) {
         this.main = main;
-        this.inventoryManager = inventoryManager;
+        this.inventoryManager = new SimpleInventoryManager();
     }
 
     private enum CannonState {
@@ -48,12 +50,13 @@ public class CannonManager implements GameMessageListener {
     }
 
     private CannonState getCannonState() {
-        GameObject cannon = GameObjects.closest("Dwarf multicannon");
 
-        if (cannon == null && !hasCannon() && !hasCannonballs()) {
+
+        if ((placedCannon == null) && !hasCannon() && !hasCannonballs()) {
             return CannonState.EXIT;
         }
-        if (cannon == null) {
+
+        if (placedCannon == null) {
             return CannonState.PLACE_CANNON;
         }
         if (hasCannonballs()) {
@@ -91,19 +94,20 @@ public class CannonManager implements GameMessageListener {
         }
     }
 
+
     private void loadCannon() {
         if (System.currentTimeMillis() < nextLoadAttemptTime) {
             return;
         }
 
-        GameObject cannon = GameObjects.closest("Dwarf multicannon");
-        if (cannon != null) {
-            cannon.interact("Fire");
+        if (placedCannon != null) {
+            placedCannon.interact("Fire");
             Sleep.sleep(1000);
             isCannonLoaded = true;
             nextLoadAttemptTime = System.currentTimeMillis() + getRandomLoadInterval();
         }
     }
+
 
     private int getRandomLoadInterval() {
         Random random = new Random();
@@ -115,13 +119,13 @@ public class CannonManager implements GameMessageListener {
         if (cannon != null) {
             cannon.interact("Set-up");
             Sleep.sleepUntil(() -> GameObjects.closest("Dwarf multicannon") != null, 5000);
+            placedCannon = GameObjects.closest("Dwarf multicannon");
         }
     }
 
-    private void pickUpCannon() {
-        GameObject cannon = GameObjects.closest("Dwarf multicannon");
-        if (cannon != null) {
-            cannon.interact("Pick-up");
+    public void pickUpCannon() {
+        if (placedCannon != null) {
+            placedCannon.interact("Pick-up");
             Sleep.sleepUntil(() -> Inventory.contains(CANNON_ID), 5000);
         }
     }
@@ -154,5 +158,5 @@ public class CannonManager implements GameMessageListener {
     private boolean hasCannonballs() {
         return inventoryManager.contains(CANNONBALL_ID);
     }
-    
+
 }

@@ -41,7 +41,7 @@ public class Cannon extends AbstractScript implements ChatListener {
     private void setupAntiBan() {
         List<AntiBan.AntiBanAction> antiBanActions = new ArrayList<>();
 
-        antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.CHECK_MAGIC_XP, 1 * 60 * 1000, 10 * 60 * 1000, 1 * 60 * 1000, 2 * 60 * 1000));
+//        antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.CHECK_MAGIC_XP, 1 * 60 * 1000, 10 * 60 * 1000, 1 * 60 * 1000, 2 * 60 * 1000));
         antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.IDLE_FOR_A_BIT, 1 * 60 * 1000, 10 * 60 * 1000, 1 * 60 * 1000, 2 * 60 * 1000));
         AntiBan antiBan = new AntiBan(antiBanActions);
         this.antiBan = antiBan;
@@ -68,6 +68,11 @@ public class Cannon extends AbstractScript implements ChatListener {
         this.stop();
     }
 
+    @Override
+    public void onExit() {
+        cannonManager.pickUpCannon();
+        super.onExit();
+    }
 
     private boolean isRunning = false;
 
