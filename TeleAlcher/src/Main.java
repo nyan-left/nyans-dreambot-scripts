@@ -6,6 +6,9 @@ import org.dreambot.api.utilities.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @ScriptManifest(name = "Nyan Alch Teler", description = "A simple script that alches and teles", author = "Nyan Left",
         version = 0.0, category = Category.MAGIC, image = "")
@@ -22,8 +25,19 @@ public class Main extends AbstractScript {
         SwingUtilities.invokeLater(() -> {
             GUI.createGUI(this);
         });
-        antiBan = new AntiBan(this);
+
+        this.setupAntiBan();
         paint = new Paint(this, antiBan);
+    }
+
+
+    private void setupAntiBan() {
+        List<AntiBan.AntiBanAction> antiBanActions = new ArrayList<>();
+
+        antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.CHECK_MAGIC_XP, 1 * 60 * 1000, 10 * 60 * 1000, 1 * 60 * 1000, 2 * 60 * 1000));
+        antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.IDLE_FOR_A_BIT, 1 * 60 * 1000, 10 * 60 * 1000, 1 * 60 * 1000, 2 * 60 * 1000));
+        AntiBan antiBan = new AntiBan(this, antiBanActions);
+        this.antiBan = antiBan;
     }
 
     @Override

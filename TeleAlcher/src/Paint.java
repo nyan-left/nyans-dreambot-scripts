@@ -9,14 +9,14 @@ import java.net.URL;
 
 
 public class Paint {
-    private Image mainPaint;
+    
     private AntiBan antiBan;
     private AbstractScript script;
 
     public Paint(AbstractScript script, AntiBan antiBan) {
         this.script = script;
         this.antiBan = antiBan;
-        mainPaint = getImage("https://i.imgur.com/yuQc.png");
+
     }
 
     public Image getImage(String url) {
@@ -29,7 +29,7 @@ public class Paint {
     }
 
     public void draw(Graphics graphics) {
-        graphics.drawImage(mainPaint, 0, 0, null);
+
         graphics.setFont(new Font("Century Gothic", Font.BOLD, 12));
         graphics.setColor(new Color(135, 135, 125));
 
