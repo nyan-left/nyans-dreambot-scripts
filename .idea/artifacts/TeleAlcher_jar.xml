@@ -2,7 +2,7 @@
   <artifact type="jar" name="TeleAlcher:jar">
     <output-path>$USER_HOME$/DreamBot/Scripts</output-path>
     <root id="archive" name="TeleAlcher.jar">
-      <element id="module-output" name="TeleAlcher" />
+      <element id="module-output" name="NyanScripts" />
       <element id="extracted-dir" path="$USER_HOME$/DreamBot/BotData/gamepack.jar" path-in-jar="/" />
     </root>
   </artifact>
