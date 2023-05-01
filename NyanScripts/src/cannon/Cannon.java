@@ -12,8 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@ScriptManifest(name = "Nyan Cannoner", description = "Cannons ogres!", author = "Nyan Left",
-        version = 0.0, category = Category.COMBAT, image = "")
+@ScriptManifest(name = "Nyan Cannoner", description = "Cannons ogres!", author = "Nyan Left", version = 0.0, category = Category.COMBAT)
 public class Cannon extends AbstractScript implements ChatListener {
 
     private AntiBan antiBan;
@@ -30,6 +29,7 @@ public class Cannon extends AbstractScript implements ChatListener {
     @Override
     public void onStart() {
         Logger.log("Starting script");
+        this.paint = new CannonPaint();
         this.setupAntiBan();
         this.cannonManager = new CannonManager(this);
 
@@ -41,11 +41,11 @@ public class Cannon extends AbstractScript implements ChatListener {
     private void setupAntiBan() {
         List<AntiBan.AntiBanAction> antiBanActions = new ArrayList<>();
 
-        antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.ROTATE_CAMERA, 1 * 30 * 1000, 10 * 120 * 1000, 1500, 5000));
-        antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.IDLE_FOR_A_BIT, 1 * 60 * 1000, 10 * 60 * 1000, 1 * 60 * 1000, 2 * 60 * 1000));
+        antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.ROTATE_CAMERA, 30 * 1000, 10 * 120 * 1000, 1500, 5000));
+        antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.IDLE_FOR_A_BIT, 60 * 1000, 10 * 60 * 1000, 60 * 1000, 2 * 60 * 1000));
 
-        AntiBan antiBan = new AntiBan(antiBanActions);
-        this.antiBan = antiBan;
+        this.antiBan = new AntiBan(antiBanActions);
+  
     }
 
     @Override
