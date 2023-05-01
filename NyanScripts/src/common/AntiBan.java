@@ -67,8 +67,12 @@ public class AntiBan {
                     rotateCamera(randomAction.getRandomDuration());
                     break;
             }
-            timer.reset();
-            timer.setRunTime(getRandomActionFrequency());
+
+            // Synchronize the timer reset and runtime set operations
+            synchronized (timer) {
+                timer.reset();
+                timer.setRunTime(getRandomActionFrequency());
+            }
         }
     }
 
