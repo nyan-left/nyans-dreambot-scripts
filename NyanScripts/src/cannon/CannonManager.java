@@ -105,11 +105,15 @@ public class CannonManager implements GameMessageListener {
         if (System.currentTimeMillis() < nextLoadAttemptTime) return;
         if (placedCannon == null) return;
 
+        // Check if the cannon is broken before attempting to fire
+        if (placedCannon.getName().equalsIgnoreCase("Broken multicannon")) {
+            isBroken = true;
+            return;
+        }
 
         placedCannon.interact("Fire");
         Sleep.sleep(100, 3000);
         nextLoadAttemptTime = System.currentTimeMillis() + getRandomLoadInterval();
-
     }
 
 
