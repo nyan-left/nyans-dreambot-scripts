@@ -1,8 +1,12 @@
 import org.dreambot.api.methods.container.impl.Inventory;
 import org.dreambot.api.methods.interactive.GameObjects;
+import org.dreambot.api.methods.interactive.Players;
+import org.dreambot.api.methods.map.Tile;
+import org.dreambot.api.methods.walking.impl.Walking;
 import org.dreambot.api.utilities.Logger;
 import org.dreambot.api.utilities.Sleep;
 import org.dreambot.api.wrappers.interactive.GameObject;
+import org.dreambot.api.wrappers.interactive.Player;
 import org.dreambot.api.wrappers.items.Item;
 
 import java.util.Random;
@@ -29,6 +33,7 @@ public class CannonManager implements GameMessageListener {
     private static final int CANNON_ID = 6;
     private static final int CANNONBALL_ID = 2;
 
+
     private GameObject placedCannon;
 
     private long nextLoadAttemptTime;
@@ -43,21 +48,30 @@ public class CannonManager implements GameMessageListener {
     private enum CannonState {
         PLACE_CANNON,
         FIRE_LOAD_CANNON,
+        HOP_WORLD,
         EXIT,
     }
 
     private CannonState getCannonState() {
+        Logger.log("Getting cannon state");
+        Logger.log("Has cannonballs: " + hasCannonballs());
 
+        if (placedCannon != null) {
+            Logger.log("Placed cannon: " + placedCannon.getName());
+        } else {
+            Logger.log("Placed cannon: null");
+        }
 
-        if ((placedCannon == null) && !hasCannon() && !hasCannonballs()) return CannonState.EXIT;
-        if (placedCannon == null) return CannonState.PLACE_CANNON;
-        if (hasCannonballs()) return CannonState.FIRE_LOAD_CANNON;
+        if (!hasCannonballs()) return CannonState.EXIT;
 
+        // if cannon has been placed, load
+        if (placedCannon != null) return CannonState.FIRE_LOAD_CANNON;
+        // if cannon in inventory, place
+        if (Inventory.contains(CANNON_ID)) return CannonState.PLACE_CANNON;
 
         Logger.log("Picking up cannon as we don't have any cannonballs");
         return CannonState.EXIT;
     }
-
 
     public void manageCannon() {
         CannonState state = getCannonState();
@@ -97,12 +111,41 @@ public class CannonManager implements GameMessageListener {
         return random.nextInt((15 - 10) * 1000) + 10 * 1000; // Convert to milliseconds
     }
 
+    private int targetX = 2528;
+    private int targetY = 3370;
+
+    private Tile targetTile = new Tile(targetX, targetY);
+
+
     private void placeCannon() {
+        this.walkToSpot();
+
         Item cannon = Inventory.get(CANNON_ID);
         if (cannon != null) {
             cannon.interact("Set-up");
-            Sleep.sleepUntil(() -> GameObjects.closest("Dwarf multicannon") != null, 5000);
-            placedCannon = GameObjects.closest("Dwarf multicannon");
+            Sleep.sleepUntil(() -> GameObjects.closest("Dwarf multicannon") != null, 10000);
+            GameObject placedCannonObject = GameObjects.closest("Dwarf multicannon");
+            if (placedCannonObject != null) {
+                placedCannon = placedCannonObject;
+                Logger.log("Placed cannon");
+            } else {
+                Logger.log("Failed to place the cannon");
+            }
+        }
+
+        Sleep.sleep(1000, 5000);
+
+        this.walkToSpot();
+    }
+
+    private void walkToSpot() {
+        //if not at spot, walk there
+        Player localPlayer = Players.getLocal();
+        // Check if the player is not already at the target tile
+        if (localPlayer != null && !localPlayer.getTile().equals(targetTile)) {
+            // Walk to the target tile
+            Walking.walk(targetTile);
+            Sleep.sleepUntil(() -> targetTile.distance() <= 1, 5000);
         }
     }
 
@@ -116,10 +159,14 @@ public class CannonManager implements GameMessageListener {
 
     public void onGameMessage(String message) {
         switch (message) {
-
+            case "That isn't your cannon!":
             case "There isn't enough space to set up here.":
+                Logger.log("Hopping worlds");
+                this.hopWorld();
+                // HOP!
+                break;
             case "You pick up the cannon. It's really heavy.":
-                this.exit();
+                main.exit("Picked up cannon");
                 break;
             case "You add the furnace.":
             case "You load the cannon with 30 cannonballs.":
@@ -129,9 +176,10 @@ public class CannonManager implements GameMessageListener {
         }
     }
 
-    private boolean hasCannon() {
-        return inventoryManager.contains(CANNON_ID);
+    private void hopWorld() {
+        main.hopWorld();
     }
+
 
     private boolean hasCannonballs() {
         return inventoryManager.contains(CANNONBALL_ID);

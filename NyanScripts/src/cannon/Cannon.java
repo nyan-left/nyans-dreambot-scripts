@@ -1,9 +1,12 @@
 import org.dreambot.api.methods.Calculations;
+import org.dreambot.api.randoms.BreakSolver;
+import org.dreambot.api.randoms.RandomSolver;
 import org.dreambot.api.script.AbstractScript;
 import org.dreambot.api.script.Category;
 import org.dreambot.api.script.ScriptManifest;
 import org.dreambot.api.script.listener.ChatListener;
 import org.dreambot.api.utilities.Logger;
+import org.dreambot.api.utilities.Sleep;
 import org.dreambot.api.wrappers.widgets.message.Message;
 
 import javax.swing.*;
@@ -17,7 +20,6 @@ public class Cannon extends AbstractScript implements ChatListener {
 
     private AntiBan antiBan;
     private CannonPaint paint;
-
 
     CannonManager cannonManager;
 
@@ -41,11 +43,21 @@ public class Cannon extends AbstractScript implements ChatListener {
     private void setupAntiBan() {
         List<AntiBan.AntiBanAction> antiBanActions = new ArrayList<>();
 
-        antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.ROTATE_CAMERA, 30 * 1000, 10 * 120 * 1000, 1500, 5000));
+        // antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.ROTATE_CAMERA, 30 * 1000, 10 * 120 * 1000, 1500, 5000));
         antiBanActions.add(new AntiBan.AntiBanAction(AntiBan.AntiBanType.IDLE_FOR_A_BIT, 60 * 1000, 10 * 60 * 1000, 60 * 1000, 2 * 60 * 1000));
 
         this.antiBan = new AntiBan(antiBanActions);
-  
+
+    }
+
+    @Override
+    public boolean onSolverStart(RandomSolver solver) {
+        if (solver instanceof BreakSolver) {
+            cannonManager.exit();
+            Sleep.sleep(10000);
+        }
+        super.onSolverStart(solver);
+        return true;
     }
 
     @Override
@@ -67,6 +79,11 @@ public class Cannon extends AbstractScript implements ChatListener {
         Logger.log(message);
         isRunning = false;
         this.stop();
+    }
+
+    public void hopWorld() {
+        Logger.log("Hopping worlds");
+        WorldSwitcher.hopToRandomWorld();
     }
 
 
