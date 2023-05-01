@@ -32,7 +32,6 @@ public class CannonManager implements GameMessageListener {
     private GameObject placedCannon;
 
     private long nextLoadAttemptTime;
-    private boolean isCannonLoaded;
     private Cannon main;
     private InventoryManager inventoryManager;
 
@@ -43,8 +42,7 @@ public class CannonManager implements GameMessageListener {
 
     private enum CannonState {
         PLACE_CANNON,
-        LOAD_CANNON,
-        FIRE_CANNON,
+        FIRE_LOAD_CANNON,
         PICK_UP_CANNON,
         EXIT
     }
@@ -52,15 +50,14 @@ public class CannonManager implements GameMessageListener {
     private CannonState getCannonState() {
 
 
-        if ((placedCannon == null) && !hasCannon() && !hasCannonballs()) {
-            return CannonState.EXIT;
-        }
+        if ((placedCannon == null) && !hasCannon() && !hasCannonballs()) return CannonState.EXIT;
 
-        if (placedCannon == null) {
-            return CannonState.PLACE_CANNON;
-        }
+        if (placedCannon == null) return CannonState.PLACE_CANNON;
+
         if (hasCannonballs()) {
-            return isCannonLoaded ? CannonState.FIRE_CANNON : CannonState.LOAD_CANNON;
+            return CannonState.FIRE_LOAD_CANNON;
+        } else {
+            Logger.log("Picking up cannon as we don't have any cannonballs");
         }
         return CannonState.PICK_UP_CANNON;
     }
@@ -74,38 +71,26 @@ public class CannonManager implements GameMessageListener {
             case PLACE_CANNON:
                 placeCannon();
                 break;
-            case LOAD_CANNON:
+
+            case FIRE_LOAD_CANNON:
                 loadCannon();
                 break;
-            case FIRE_CANNON:
-                if (hasCannonballs()) {
-                    loadCannon();
-                } else {
-                    main.exit("No more cannonballs in inventory");
-                }
-                break;
-            case PICK_UP_CANNON:
-                pickUpCannon();
-                break;
-            case EXIT:
             default:
-                main.exit("You don't have a cannon or cannonballs");
+                main.exit("Cannon manager exited");
                 break;
         }
     }
 
 
     private void loadCannon() {
-        if (System.currentTimeMillis() < nextLoadAttemptTime) {
-            return;
-        }
+        if (System.currentTimeMillis() < nextLoadAttemptTime) return;
+        if (placedCannon == null) return;
 
-        if (placedCannon != null) {
-            placedCannon.interact("Fire");
-            Sleep.sleep(1000);
-            isCannonLoaded = true;
-            nextLoadAttemptTime = System.currentTimeMillis() + getRandomLoadInterval();
-        }
+
+        placedCannon.interact("Fire");
+        Sleep.sleep(100, 3000);
+        nextLoadAttemptTime = System.currentTimeMillis() + getRandomLoadInterval();
+
     }
 
 
@@ -123,29 +108,24 @@ public class CannonManager implements GameMessageListener {
         }
     }
 
-    public void pickUpCannon() {
+    public void pickUpCannonAndExit() {
         if (placedCannon != null) {
             placedCannon.interact("Pick-up");
             Sleep.sleepUntil(() -> Inventory.contains(CANNON_ID), 5000);
+            main.exit("Picked up cannon");
         }
     }
 
     public void onGameMessage(String message) {
         switch (message) {
+
             case "There isn't enough space to set up here.":
-                pickUpCannon();
-                main.exit("There isn't enough space to set up here.");
+            case "You pick up the cannon. It's really heavy.":
+                main.exit(message);
                 break;
             case "You add the furnace.":
-                isCannonLoaded = false;
-                break;
             case "You load the cannon with 30 cannonballs.":
             case "Your cannon is already firing.":
-                isCannonLoaded = true;
-                break;
-            case "You pick up the cannon. It's really heavy.":
-                isCannonLoaded = false;
-                break;
             default:
                 break;
         }

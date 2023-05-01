@@ -67,12 +67,7 @@ public class Cannon extends AbstractScript implements ChatListener {
         isRunning = false;
         this.stop();
     }
-
-    @Override
-    public void onExit() {
-        cannonManager.pickUpCannon();
-        super.onExit();
-    }
+    
 
     private boolean isRunning = false;
 
