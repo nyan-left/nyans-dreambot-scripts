@@ -45,13 +45,13 @@ public class CannonManager implements GameMessageListener {
     }
 
     private enum CannonState {
-        PLACE_CANNON, FIRE_LOAD_CANNON, BROKEN, EXIT
+        PLACE_CANNON, FIRE, BROKEN, EXIT
     }
 
     private CannonState getCannonState() {
         if (!hasCannonballs()) return CannonState.EXIT;
         if (isBrokenCannonNearby()) return CannonState.BROKEN;
-        if (placedCannon != null) return CannonState.FIRE_LOAD_CANNON;
+        if (placedCannon != null) return CannonState.FIRE;
         if (Inventory.contains(CANNON_ID)) return CannonState.PLACE_CANNON;
         return CannonState.EXIT;
     }
@@ -66,7 +66,7 @@ public class CannonManager implements GameMessageListener {
             case PLACE_CANNON:
                 placeCannon();
                 break;
-            case FIRE_LOAD_CANNON:
+            case FIRE:
                 loadCannon();
                 break;
             case BROKEN:
@@ -123,11 +123,13 @@ public class CannonManager implements GameMessageListener {
         if (placedCannon != null) {
             placedCannon.interact("Pick-up");
             Sleep.sleepUntil(() -> Inventory.contains(CANNON_ID), 5000);
+            placedCannon = null;
         }
     }
 
     @Override
     public void onGameMessage(String message) {
+        //23:01:17: [SCRIPT] Game message: <col=ef1020>Your cannon has broken!
         Logger.log("Game message: " + message);
         switch (message) {
             case "That isn't your cannon!":
