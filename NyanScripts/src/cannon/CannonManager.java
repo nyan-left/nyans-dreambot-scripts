@@ -11,7 +11,6 @@ import org.dreambot.api.wrappers.items.Item;
 
 import java.util.Random;
 
-
 interface InventoryManager {
     boolean contains(int itemId);
 }
@@ -27,17 +26,14 @@ interface GameMessageListener {
     void onGameMessage(String message);
 }
 
-
 public class CannonManager implements GameMessageListener {
 
     private static final int CANNON_ID = 6;
     private static final int CANNONBALL_ID = 2;
-
     private static final int BROKEN_CANNON_ID = 14916;
-
+    private static final Tile TARGET_TILE = new Tile(2528, 3370);
 
     private GameObject placedCannon;
-
     private long nextLoadAttemptTime;
     private final Cannon main;
     private final InventoryManager inventoryManager;
@@ -49,59 +45,46 @@ public class CannonManager implements GameMessageListener {
     }
 
     private enum CannonState {
-        PLACE_CANNON,
-        FIRE_LOAD_CANNON,
-        HOP_WORLD,
-        BROKEN,
-        EXIT,
+        PLACE_CANNON, FIRE_LOAD_CANNON, BROKEN, EXIT
     }
 
     private CannonState getCannonState() {
-
         if (!hasCannonballs()) return CannonState.EXIT;
-        if (this.isBrokenCannonNearby()) return CannonState.BROKEN;
+        if (isBrokenCannonNearby()) return CannonState.BROKEN;
         if (placedCannon != null) return CannonState.FIRE_LOAD_CANNON;
         if (Inventory.contains(CANNON_ID)) return CannonState.PLACE_CANNON;
-
         return CannonState.EXIT;
     }
 
     public String getCurrentStateName() {
-        return getCannonState().name().toString();
+        return getCannonState().name();
     }
 
-    public void manageCannon() {
-        CannonState state = getCannonState();
 
-        switch (state) {
+    public void manageCannon() {
+        switch (getCannonState()) {
             case PLACE_CANNON:
                 placeCannon();
                 break;
-
             case FIRE_LOAD_CANNON:
                 loadCannon();
                 break;
             case BROKEN:
                 repairCannon();
                 break;
-
             case EXIT:
-            default:
-                this.exit();
+                exit();
                 break;
         }
     }
 
 
     private void loadCannon() {
-        if (System.currentTimeMillis() < nextLoadAttemptTime) return;
-        if (placedCannon == null) return;
-
+        if (System.currentTimeMillis() < nextLoadAttemptTime || placedCannon == null) return;
         placedCannon.interact("Fire");
         Sleep.sleep(100, 3000);
         nextLoadAttemptTime = System.currentTimeMillis() + getRandomLoadInterval();
     }
-
 
     private int getRandomLoadInterval() {
         Random random = new Random();
@@ -112,45 +95,27 @@ public class CannonManager implements GameMessageListener {
         return GameObjects.closest(BROKEN_CANNON_ID) != null;
     }
 
-    private int targetX = 2528;
-    private int targetY = 3370;
-
-    private Tile targetTile = new Tile(targetX, targetY);
-
-
     private void placeCannon() {
-        this.walkToSpot();
-
+        walkToSpot();
         Item cannon = Inventory.get(CANNON_ID);
         if (cannon != null) {
             cannon.interact("Set-up");
-            Sleep.sleepUntil(() -> GameObjects.closest("Dwarf multicannon") != null, 10000);
-            GameObject placedCannonObject = GameObjects.closest("Dwarf multicannon");
-            if (placedCannonObject != null) {
-                placedCannon = placedCannonObject;
-            } else {
-                Logger.log("Failed to place the cannon");
-            }
+            Sleep.sleepUntil(() -> (placedCannon = GameObjects.closest("Dwarf multicannon")) != null, 10000);
         }
-
         Sleep.sleep(1000, 5000);
-
-        this.walkToSpot();
+        walkToSpot();
     }
 
     private void walkToSpot() {
-        //if not at spot, walk there
         Player localPlayer = Players.getLocal();
-        // Check if the player is not already at the target tile
-        if (localPlayer != null && !localPlayer.getTile().equals(targetTile)) {
-            // Walk to the target tile
-            Walking.walk(targetTile);
-            Sleep.sleepUntil(() -> targetTile.distance() <= 1, 5000);
+        if (localPlayer != null && !localPlayer.getTile().equals(TARGET_TILE)) {
+            Walking.walk(TARGET_TILE);
+            Sleep.sleepUntil(() -> TARGET_TILE.distance() <= 1, 5000);
         }
     }
 
     public void exit() {
-        this.pickUpCannon();
+        pickUpCannon();
         main.exit("pick up cannon and exit called");
     }
 
@@ -161,52 +126,35 @@ public class CannonManager implements GameMessageListener {
         }
     }
 
+    @Override
     public void onGameMessage(String message) {
         Logger.log("Game message: " + message);
         switch (message) {
             case "That isn't your cannon!":
             case "There isn't enough space to set up here.":
                 Logger.log("Hopping worlds");
-                this.hopWorld();
-                // HOP!
+                main.hopWorld();
                 break;
             case "You pick up the cannon. It's really heavy.":
                 main.exit("Picked up cannon");
                 break;
             case "Your cannon has broken!":
                 Logger.log("Cannon has broken");
-            case "You repair your cannon, restoring it to working order.":
                 break;
-            case "You add the furnace.":
-            case "You load the cannon with 30 cannonballs.":
-            case "Your cannon is already firing.":
             default:
                 break;
         }
     }
 
-    public void repairCannon() {
+    private void repairCannon() {
         GameObject cannon = GameObjects.closest("Broken multicannon");
         if (cannon != null) {
             cannon.interact("Repair");
-            Sleep.sleepUntil(() -> GameObjects.closest("Dwarf multicannon") != null, 10000);
-            GameObject placedCannonObject = GameObjects.closest("Dwarf multicannon");
-            if (placedCannonObject != null) {
-                placedCannon = placedCannonObject;
-                Logger.log("Placed cannon");
-            } else {
-                Logger.log("Failed to place the cannon");
-            }
+            Sleep.sleepUntil(() -> (placedCannon = GameObjects.closest("Dwarf multicannon")) != null, 10000);
         }
     }
-
-    private void hopWorld() {
-        main.hopWorld();
-    }
-
 
     private boolean hasCannonballs() {
         return inventoryManager.contains(CANNONBALL_ID);
     }
-
 }
