@@ -33,6 +33,8 @@ public class CannonManager implements GameMessageListener {
     private static final int CANNON_ID = 6;
     private static final int CANNONBALL_ID = 2;
 
+    private static final int BROKEN_CANNON_ID = 14916;
+
 
     private GameObject placedCannon;
 
@@ -55,25 +57,12 @@ public class CannonManager implements GameMessageListener {
     }
 
     private CannonState getCannonState() {
-        Logger.log("Getting cannon state");
-        Logger.log("Has cannonballs: " + hasCannonballs());
-
-        if (placedCannon != null) {
-            Logger.log("Placed cannon: " + placedCannon.getName());
-        } else {
-            Logger.log("Placed cannon: null");
-        }
 
         if (!hasCannonballs()) return CannonState.EXIT;
-
-        if (this.isBroken) return CannonState.BROKEN;
-
-        // if cannon has been placed, load
+        if (this.isBrokenCannonNearby()) return CannonState.BROKEN;
         if (placedCannon != null) return CannonState.FIRE_LOAD_CANNON;
-        // if cannon in inventory, place
         if (Inventory.contains(CANNON_ID)) return CannonState.PLACE_CANNON;
 
-        Logger.log("Picking up cannon as we don't have any cannonballs");
         return CannonState.EXIT;
     }
 
@@ -83,7 +72,6 @@ public class CannonManager implements GameMessageListener {
 
     public void manageCannon() {
         CannonState state = getCannonState();
-        Logger.log(state.toString());
 
         switch (state) {
             case PLACE_CANNON:
@@ -109,12 +97,6 @@ public class CannonManager implements GameMessageListener {
         if (System.currentTimeMillis() < nextLoadAttemptTime) return;
         if (placedCannon == null) return;
 
-        // Check if the cannon is broken before attempting to fire
-        if (placedCannon.getName().equalsIgnoreCase("Broken multicannon")) {
-            isBroken = true;
-            return;
-        }
-
         placedCannon.interact("Fire");
         Sleep.sleep(100, 3000);
         nextLoadAttemptTime = System.currentTimeMillis() + getRandomLoadInterval();
@@ -124,6 +106,10 @@ public class CannonManager implements GameMessageListener {
     private int getRandomLoadInterval() {
         Random random = new Random();
         return random.nextInt((20 - 7) * 1000) + 7 * 1000; // 7-20 seconds
+    }
+
+    private boolean isBrokenCannonNearby() {
+        return GameObjects.closest(BROKEN_CANNON_ID) != null;
     }
 
     private int targetX = 2528;
@@ -142,7 +128,6 @@ public class CannonManager implements GameMessageListener {
             GameObject placedCannonObject = GameObjects.closest("Dwarf multicannon");
             if (placedCannonObject != null) {
                 placedCannon = placedCannonObject;
-                Logger.log("Placed cannon");
             } else {
                 Logger.log("Failed to place the cannon");
             }
@@ -177,6 +162,7 @@ public class CannonManager implements GameMessageListener {
     }
 
     public void onGameMessage(String message) {
+        Logger.log("Game message: " + message);
         switch (message) {
             case "That isn't your cannon!":
             case "There isn't enough space to set up here.":
@@ -189,11 +175,7 @@ public class CannonManager implements GameMessageListener {
                 break;
             case "Your cannon has broken!":
                 Logger.log("Cannon has broken");
-                this.isBroken = true;
-                break;
             case "You repair your cannon, restoring it to working order.":
-                Logger.log("Cannon has been repaired");
-                this.isBroken = false;
                 break;
             case "You add the furnace.":
             case "You load the cannon with 30 cannonballs.":
@@ -202,8 +184,6 @@ public class CannonManager implements GameMessageListener {
                 break;
         }
     }
-
-    private boolean isBroken = false;
 
     public void repairCannon() {
         GameObject cannon = GameObjects.closest("Broken multicannon");
