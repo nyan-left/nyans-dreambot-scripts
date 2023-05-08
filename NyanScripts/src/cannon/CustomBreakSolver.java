@@ -17,7 +17,7 @@ public class CustomBreakSolver extends BreakSolver {
                 isCleaningUp = true;
                 // Perform your cleanup tasks here before the break starts
                 // For example: picking up the cannon
-                cannonManager.exit();
+                cannonManager.pickUpCannon();
                 // After the cleanup, return true for the break to start
                 return true;
             }

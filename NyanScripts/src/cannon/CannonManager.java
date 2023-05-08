@@ -73,7 +73,7 @@ public class CannonManager implements GameMessageListener {
                 repairCannon();
                 break;
             case EXIT:
-                exit();
+                this.pickUpCannon();
                 break;
         }
     }
@@ -112,11 +112,6 @@ public class CannonManager implements GameMessageListener {
             Walking.walk(TARGET_TILE);
             Sleep.sleepUntil(() -> TARGET_TILE.distance() <= 1, 5000);
         }
-    }
-
-    public void exit() {
-        pickUpCannon();
-        main.exit("pick up cannon and exit called");
     }
 
     public void pickUpCannon() {
